@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package tg_sticker_to_wechat;
+
+// Next Id: 7.
+message Sticker {
+  // For pyrogram.file_id.FileId
+  optional string file_id = 1;  // Primary key
+
+  // For pyrogram.raw.types.document
+  optional int64 doc_id = 2;
+
+  // For pyrogram.raw.types.StickerPack
+  optional string emoticon = 3;
+
+  optional string extension = 4;
+  optional int64 original_size = 5;
+  optional int64 gif_size = 6;
+}
+
+// Next Id: 7.
+message StickerSet {
+  // For pyrogram.raw.types.StickerSet
+  optional int64 id = 1;  // Primary key
+  optional int32 hash = 2;
+  optional string short_name = 3;
+  optional string title = 4;
+
+  map<string, Sticker> sticker = 5;
+  optional double update_timestamp = 6;
+}
+
+// Next Id: 3.
+message DirStruct {
+  // For pyrogram.raw.types.messages.AllStickers
+  map<int64, StickerSet> sticker_set = 1;
+  optional int64 hash = 2;
+}

@@ -1,0 +1,4 @@
+pillow==9.2.0
+protobuf==3.19.4
+pygithub==1.55
+pyrogram==1.4.12
