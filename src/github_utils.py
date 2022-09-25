@@ -7,10 +7,13 @@ from retry import retry
 from requests.exceptions import RequestException
 from github import Github
 from github.ContentFile import ContentFile
+from github.GithubException import GithubException
 from github.Repository import Repository
 from github.PullRequest import PullRequest
 
 from .errors import GithubBranchExistError
+
+_EXCEPTIONS = (GithubException, RequestException)
 
 
 def _decode_base64_str_to_str(s: str) -> str:
@@ -35,7 +38,7 @@ def _check_exists(repo: Repository, branch_name: str, rel_path: Path,
     return (target_tree_paths[0].type != 'tree') ^ is_dir
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def check_exists(repo: Repository, branch_name: str, rel_path: Path,
                  is_dir: bool) -> bool:
     """Check if a relative path exists in the github repo
@@ -52,7 +55,7 @@ def check_exists(repo: Repository, branch_name: str, rel_path: Path,
     return _check_exists(repo, branch_name, rel_path, is_dir)
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def create_branch_from_master(repo: Repository,
                               branch_name: str,
                               master_branch_name: str = 'master'):
@@ -72,7 +75,7 @@ def create_branch_from_master(repo: Repository,
         ref=_get_ref(branch_name), sha=master_branch.commit.sha)
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def delete_branch(repo: Repository,
                   branch_name: str,
                   should_check_exist: bool = True) -> bool:
@@ -97,7 +100,7 @@ def delete_branch(repo: Repository,
     return True
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def merge_branch_to_master(repo: Repository,
                            branch_name: str,
                            commit_message: str,
@@ -125,7 +128,7 @@ def merge_branch_to_master(repo: Repository,
     return pr.url
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def get_file_content(repo: Repository,
                      branch_name: str,
                      rel_path: Path,
@@ -152,7 +155,7 @@ def get_file_content(repo: Repository,
     return content_str
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def create_file(repo: Repository,
                 rel_path: Path,
                 content: Union[str, bytes],
@@ -187,7 +190,7 @@ def create_file(repo: Repository,
     return True
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def delete_file(repo: Repository,
                 rel_path: Path,
                 commit_message: str,
@@ -244,7 +247,7 @@ def get_cdn_github_url(repo: Repository, rel_path: Path,
     return cdn_github_url
 
 
-@retry(RequestException, tries=5, delay=1)
+@retry(_EXCEPTIONS, tries=5, delay=1)
 def get_github_repo(token: str, repo_name: str) -> Repository:
     """Get a Github Repository instance by token and repo name
 
